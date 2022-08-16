@@ -1,5 +1,6 @@
 import { createRouter } from "./context";
 import { z } from "zod";
+import * as trpc from '@trpc/server';
 
 export const usersRouter = createRouter()
   .query("getAll", {
@@ -27,5 +28,27 @@ export const usersRouter = createRouter()
             mail: input.mail,
         },
       });
+    },
+  })
+  .mutation("deleteOne", {
+    input: z
+      .object({
+        mail: z.string().email(),
+      }),
+    async resolve({ ctx, input }) {
+      try {
+        return await ctx.prisma.user.delete({
+          where: {
+              mail: input.mail,
+          },
+        });
+      }
+      catch(e) {
+        throw new trpc.TRPCError({
+          code: 'NOT_FOUND',
+          message:`Unable to delete ${input.mail}`,
+          cause: e,
+        });
+      }
     },
   });

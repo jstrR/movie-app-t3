@@ -1,7 +1,7 @@
 import { createSSGHelpers } from "@trpc/react/ssg";
 import type { NextPage } from "next";
 import Head from "next/head";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { appRouter, createContext } from "../server/router";
 import { trpc } from "../utils/trpc";
 import superjson from "superjson";
@@ -29,14 +29,28 @@ export async function getServerSideProps() {
 
 const Home: NextPage = () => {
   const users = trpc.useQuery(["users.getAll"]);
-  const usersMutation = trpc.useMutation(["users.addOne"]);
+  const createUser = trpc.useMutation(["users.addOne"]);
+  const deleteUser = trpc.useMutation(["users.deleteOne"]);
 
   const [name, setName] = useState('');
   const [mail, setMail] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    deleteUser.isError && setError(deleteUser.error.message);
+  }, [deleteUser.error?.message, deleteUser.isError]);
+
+  const handleDelete = async (mail: string) => {
+    setError('');
+    await deleteUser.mutateAsync({ mail: mail });
+    users.refetch();
+  }
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    usersMutation.mutate({ name, mail })
+    setError('');
+    await createUser.mutateAsync({ name, mail });
+    users.refetch();
   };
 
   return (
@@ -74,8 +88,9 @@ const Home: NextPage = () => {
             documentation="https://trpc.io/"
           />
         </div>
+        {error && <p className="mt-3 text-2xl text-rose-600">{error}</p>}
         <div className="mt-3 text-2xl text-blue-500 flex flex-col justify-center items-center w-full">
-          {users.data?.map((user, i) => <p key={i} className="mt-3 text-2xl text-blue-500 flex justify-center items-center">{user.name} - {user.mail}</p>)}
+          {users.data?.map((user, i) => <UserCard key={i} {...user} handleDelete={handleDelete} />)}
         </div>
         <form className="mt-3 text-2xl text-blue-500 flex flex-col justify-center items-center w-full" onSubmit={onSubmit}>
           <input type="text" className="border-2 rounded" name="userName" value={name} onChange={e=> setName(e.target.value)}/>
@@ -84,6 +99,19 @@ const Home: NextPage = () => {
         </form>
       </main>
     </>
+  );
+};
+
+const UserCard = ({
+  name,
+  mail,
+  handleDelete
+}: { name: string | null, mail: string, handleDelete: (e: string) => Promise<void> }) => {
+  return (
+    <div className="flex items-center justify-center mt-3">
+      <p className="text-2xl text-blue-500 flex justify-center items-center">{name} - {mail}</p>
+      <button onClick={() => handleDelete(mail)} className="ml-2 text-2xl text-rose-600">Delete</button>
+    </div>
   );
 };
 

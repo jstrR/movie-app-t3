@@ -30,10 +30,16 @@ export default withTRPC<AppRouter>({
   config({ ctx }) {
     if (typeof window !== 'undefined') {
       // during client requests
-      console.log('WINIWNIFNIWNIFNINWINFININFIN')
       return {
         transformer: superjson, // optional - adds superjson serialization
         url: '/api/trpc',
+        queryClientConfig: {
+          defaultOptions: {
+            queries: {
+              refetchOnWindowFocus: false
+            },
+          },
+        },
       };
     }
     /**
