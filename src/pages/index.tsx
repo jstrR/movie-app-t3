@@ -27,7 +27,7 @@ export async function getServerSideProps() {
     ctx: await createContext(),
     transformer: superjson
   });
-  await Promise.all([() => ssg.prefetchQuery("users.getAll"), () => ssg.prefetchQuery("movies.getAll")]);
+  await Promise.all([ssg.prefetchQuery("users.getAll"), ssg.prefetchQuery("movies.getAll")]);
 
   return {
     props: {
@@ -125,7 +125,7 @@ const MovieCard = ({
       <div>
         {releaseDateFormatted && (
           <h3 className="mt-3 text-sm text-gray-500">
-            {releaseDateFormatted.toLocaleDateString()}
+            {releaseDateFormatted.toLocaleDateString('en')}
           </h3>
         )}
         <button className="mt-3 w-full px-8 flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-mainColor hover:bg-hoverColorBg hover:cursor-pointer font-bold">View</button>
