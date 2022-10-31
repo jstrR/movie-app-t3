@@ -7,16 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Example {
-  id String @id @default(cuid())
+enum Role {
+  USER
+  ADMIN
 }
 
 model Account {
   id                String  @id @default(cuid())
-  userId            String
+  userId            String  @map("user_id")
   type              String
   provider          String
-  providerAccountId String
+  providerAccountId String  @map("provider_account_id")
   refresh_token     String?
   access_token      String?
   expires_at        Int?
@@ -41,8 +42,11 @@ model User {
   id           String    @id @default(cuid())
   name         String?
   mail         String    @unique
-  mailVerified DateTime?
+  mailVerified DateTime? @map("mail_verified")
   image        String?
+  role         Role      @default(USER)
+  movierRatings MovieRating[]
+  comments Comment[]
   accounts     Account[]
   sessions     Session[]
 }
@@ -55,7 +59,55 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Test {
-  id   Int    @id @default(autoincrement())
-  name String
+model Movie {
+  id   String    @id @default(cuid())
+  title String @unique
+  tagline String?
+  voteAverage Float @default(0) @map("vote_average")
+  posterPath String? @map("poster_path")
+  releaseDate DateTime @map("release_date")
+  overview String
+  budget Float @default(0)
+  revenue Float @default(0)
+  runtime Int @default(0)
+  genres MovieToGenre[]
+  trailerUrl String? @map("trailer_url")
+  price Float @default(0)
+  places Int
+  movieRatings MovieRating[] 
+  comments Comment[]
+}
+
+model Genre {
+  id String @id @default(cuid())
+  title String @unique
+  movies MovieToGenre[]
+}
+
+model MovieToGenre {
+  movie      Movie @relation(fields: [movieId], references: [id])
+  movieId    String @map("movie_id")
+  genre      Genre @relation(fields: [genreId], references: [id])
+  genreId    String @map("genre_id")
+
+  @@id([movieId, genreId])
+}
+
+model Comment {
+  id String @id @default(cuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+  movie Movie @relation(fields: [movieId], references: [id])
+  movieId String @map("movie_id")
+  message String
+  date DateTime
+}
+
+model MovieRating {
+  id String @id @default(cuid())
+  user User @relation(fields: [userId], references: [id])
+  userId String @map("user_id")
+  movie Movie @relation(fields: [movieId], references: [id])
+  movieId String @map("movie_id")
+  rating Float @default(0)
 }

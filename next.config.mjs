@@ -15,4 +15,10 @@ function defineNextConfig(config) {
 export default defineNextConfig({
   reactStrictMode: true,
   swcMinify: true,
+  images: {
+    domains: ["m.media-amazon.com", "image.tmdb.org"],
+  },
+  experimental: {
+    images: { allowFutureImage: true },
+  },
 });
