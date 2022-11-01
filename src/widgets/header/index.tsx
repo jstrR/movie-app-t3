@@ -56,8 +56,8 @@ export const Header = () => {
   //   ];
 
   return (
-    <header className="flex items-center justify-between border-b flex-col md:flex-row py-5">
-      <h2 className="flex text-2xl justify-between text-mainColor font-bold md:ml-20 mb-4 md:mb-0">
+    <header className="flex items-center justify-between border-b flex-col sm:flex-row pt-4 sm:pt-4 pb-5">
+      <h2 className="flex text-2xl justify-between text-mainColor font-bold sm:ml-20 mb-4 sm:mb-0">
         <Link href="/">Movie-App</Link>
       </h2>
 
@@ -78,7 +78,7 @@ export const Header = () => {
           </>
         )}
       </div> */}
-      <div className="flex justify-between gap-y-4 md:gap-y-0 md:gap-x-4 md:mr-20 flex-col md:flex-row">
+      <div className="flex justify-between gap-y-4 sm:gap-y-0 sm:gap-x-4 sm:mr-20 flex-col sm:flex-row">
         <ButtonNav href="/login">
           {"Log in".toLocaleUpperCase()}
         </ButtonNav>

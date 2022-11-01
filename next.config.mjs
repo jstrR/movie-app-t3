@@ -16,7 +16,7 @@ export default defineNextConfig({
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    domains: ["m.media-amazon.com", "image.tmdb.org"],
+    domains: ["m.media-amazon.com", "image.tmdb.org", "source.unsplash.com"],
   },
   experimental: {
     images: { allowFutureImage: true },
